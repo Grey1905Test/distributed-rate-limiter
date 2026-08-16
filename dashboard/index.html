@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rate Limiter Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🚦 Distributed Rate Limiter</h1>
+            <div class="header-info">
+                <div class="info-item">
+                    <span class="label">Window:</span>
+                    <span class="value" id="window-time">60s</span>
+                </div>
+                <div class="info-item">
+                    <span class="label">Max Requests:</span>
+                    <span class="value" id="max-requests">10</span>
+                </div>
+                <div class="info-item">
+                    <span class="label">Active Users:</span>
+                    <span class="value" id="active-users">0</span>
+                </div>
+            </div>
+        </header>
+
+        <main id="users-container">
+            <div class="empty-state">
+                <p>No active users</p>
+                <p class="hint">Send requests with X-User-ID header to see rate limiting in action</p>
+            </div>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
