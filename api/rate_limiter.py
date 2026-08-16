@@ -1,6 +1,7 @@
 import redis
 import os
 import time
+import uuid
 from typing import Tuple
 
 REDIS_URL = os.getenv("REDIS_URL", "redis://redis:6379")
@@ -23,8 +24,8 @@ redis.call('ZREMRANGEBYSCORE', key, 0, now - window)
 local current = redis.call('ZCARD', key)
 
 if current < limit then
-    -- Add new timestamp
-    redis.call('ZADD', key, now, now)
+    -- Add new timestamp with unique ID
+    redis.call('ZADD', key, now, ARGV[5])
     -- Set TTL on key
     redis.call('EXPIRE', key, ttl)
     return {1, current + 1}
@@ -58,7 +59,7 @@ def check_rate_limit(user_id: str) -> Tuple[bool, int, int]:
     
     result = rate_limit_script(
         keys=[key],
-        args=[now, RATE_LIMIT_WINDOW, RATE_LIMIT_MAX, ttl]
+        args=[now, RATE_LIMIT_WINDOW, RATE_LIMIT_MAX, ttl, str(uuid.uuid4())]
     )
     
     allowed = bool(result[0])
