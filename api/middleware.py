@@ -1,7 +1,7 @@
 from fastapi import Request, Response
 from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
-from rate_limiter import check_rate_limit
+from rate_limiter import check_rate_limit, log_request
 
 
 class RateLimitMiddleware(BaseHTTPMiddleware):
@@ -28,6 +28,9 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
         allowed, current_count, retry_after = check_rate_limit(user_id)
         
         if not allowed:
+            # Log blocked request
+            log_request(user_id, False, request.url.path, current_count)
+            
             return JSONResponse(
                 status_code=429,
                 content={
@@ -41,6 +44,9 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
                     "X-RateLimit-Remaining": "0"
                 }
             )
+        
+        # Log allowed request
+        log_request(user_id, True, request.url.path, current_count)
         
         # Add rate limit headers to successful response
         response = await call_next(request)

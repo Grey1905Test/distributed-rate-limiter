@@ -9,6 +9,7 @@ const windowTimeElement = document.getElementById('window-time');
 const maxRequestsElement = document.getElementById('max-requests');
 
 const userRequests = new Map();
+const userLogs = new Map();
 
 async function fetchStats() {
     try {
@@ -70,12 +71,14 @@ function updateUserCard(userId, userData, serverTimestamp) {
         }
         usersContainer.appendChild(card);
         userRequests.set(userId, []);
+        userLogs.set(userId, []);
     }
     
     const count = userData.count;
     const limit = userData.limit;
     const window = userData.window;
     const timestamps = userData.timestamps || [];
+    const recentRequests = userData.recent_requests || [];
     
     const countElement = card.querySelector('.count-value');
     const limitElement = card.querySelector('.limit-value');
@@ -108,34 +111,124 @@ function updateUserCard(userId, userData, serverTimestamp) {
         windowTime.textContent = 'No requests';
     }
     
-    const previousRequests = userRequests.get(userId) || [];
-    const newTimestamps = timestamps.filter(ts => !previousRequests.includes(ts));
+    // Update timeline with both allowed and blocked requests
+    updateTimeline(card, recentRequests, serverTimestamp, window);
     
-    newTimestamps.forEach(timestamp => {
-        const age = serverTimestamp - timestamp;
+    // Update request logs
+    updateRequestLog(card, userId, recentRequests);
+    
+    // Flash animation for new requests
+    const previousLogs = userLogs.get(userId) || [];
+    if (recentRequests.length > previousLogs.length) {
+        const latestRequest = recentRequests[0];
+        if (latestRequest) {
+            card.classList.remove('flash-allowed', 'flash-blocked');
+            void card.offsetWidth; // Trigger reflow
+            card.classList.add(latestRequest.allowed ? 'flash-allowed' : 'flash-blocked');
+            setTimeout(() => {
+                card.classList.remove('flash-allowed', 'flash-blocked');
+            }, 600);
+        }
+    }
+    
+    userRequests.set(userId, timestamps);
+    userLogs.set(userId, recentRequests);
+}
+
+function updateTimeline(card, recentRequests, serverTimestamp, window) {
+    const timeline = card.querySelector('.timeline');
+    const previousLogs = userLogs.get(card.dataset.userId) || [];
+    
+    // Get timestamps from recent requests that are within the window
+    const requestsInWindow = recentRequests.filter(req => 
+        (serverTimestamp - req.timestamp) <= window
+    );
+    
+    // Clear existing dots
+    timeline.innerHTML = '';
+    
+    // Add dots for all requests in window
+    requestsInWindow.forEach((request, index) => {
+        const age = serverTimestamp - request.timestamp;
         const position = ((window - age) / window) * 100;
         
         const dot = document.createElement('div');
-        dot.className = 'timeline-dot allowed';
-        dot.style.left = `${position}%`;
-        dot.title = `Request at ${new Date(timestamp * 1000).toLocaleTimeString()}`;
+        dot.className = `timeline-dot ${request.allowed ? 'allowed' : 'blocked'}`;
+        dot.style.left = `${Math.max(0, position)}%`;
+        
+        const statusText = request.allowed ? 'Allowed' : 'Blocked';
+        const time = new Date(request.timestamp * 1000).toLocaleTimeString();
+        dot.title = `${statusText} - ${request.endpoint}\n${time}\nCount: ${request.count}/${10}`;
+        
+        // Add pulse animation for new requests
+        const isNew = index === 0 && recentRequests.length > previousLogs.length;
+        if (isNew) {
+            dot.classList.add('pulse');
+        }
+        
         timeline.appendChild(dot);
     });
+}
+
+function updateRequestLog(card, userId, recentRequests) {
+    const logContainer = card.querySelector('.log-entries');
+    const allowedCountElement = card.querySelector('.allowed-count');
+    const blockedCountElement = card.querySelector('.blocked-count');
     
-    const existingDots = timeline.querySelectorAll('.timeline-dot');
-    existingDots.forEach(dot => {
-        const currentLeft = parseFloat(dot.style.left);
-        const age = ((100 - currentLeft) / 100) * window + 1;
+    if (!logContainer) return;
+    
+    // Calculate stats
+    const allowedCount = recentRequests.filter(r => r.allowed).length;
+    const blockedCount = recentRequests.filter(r => !r.allowed).length;
+    
+    allowedCountElement.textContent = allowedCount;
+    blockedCountElement.textContent = blockedCount;
+    
+    // Get previous logs to detect new entries
+    const previousLogs = userLogs.get(userId) || [];
+    const previousTimestamps = new Set(previousLogs.map(l => l.timestamp));
+    
+    // Clear and rebuild log entries
+    logContainer.innerHTML = '';
+    
+    recentRequests.slice(0, 20).forEach(request => {
+        const entry = document.createElement('div');
+        entry.className = 'log-entry';
         
-        if (age >= window) {
-            dot.remove();
-        } else {
-            const newPosition = ((window - age) / window) * 100;
-            dot.style.left = `${Math.max(0, newPosition)}%`;
+        // Add animation for new entries
+        const isNew = !previousTimestamps.has(request.timestamp);
+        if (isNew) {
+            entry.classList.add('new-entry');
         }
+        
+        const statusDot = document.createElement('div');
+        statusDot.className = `log-status ${request.status}`;
+        
+        const time = document.createElement('div');
+        time.className = 'log-time';
+        const date = new Date(request.timestamp * 1000);
+        time.textContent = date.toLocaleTimeString();
+        
+        const endpoint = document.createElement('div');
+        endpoint.className = 'log-endpoint';
+        endpoint.textContent = request.endpoint;
+        
+        const badge = document.createElement('div');
+        badge.className = `log-badge ${request.status}`;
+        badge.textContent = request.status;
+        
+        const count = document.createElement('div');
+        count.className = 'log-count';
+        count.textContent = `${request.count}/${10}`;
+        
+        entry.appendChild(statusDot);
+        entry.appendChild(time);
+        entry.appendChild(endpoint);
+        entry.appendChild(badge);
+        entry.appendChild(count);
+        
+        logContainer.appendChild(entry);
     });
-    
-    userRequests.set(userId, timestamps);
 }
 
 function createUserCard(userId) {
@@ -171,6 +264,19 @@ function createUserCard(userId) {
         <div class="timeline-container">
             <div class="timeline-label">Request Timeline (${globalWindow}s window)</div>
             <div class="timeline"></div>
+        </div>
+        
+        <div class="request-log">
+            <div class="log-header">
+                <div class="log-label">Request History</div>
+                <div class="log-stats">
+                    <span class="allowed-count">0</span> allowed / 
+                    <span class="blocked-count">0</span> blocked
+                </div>
+            </div>
+            <div class="log-container">
+                <div class="log-entries"></div>
+            </div>
         </div>
     `;
     
