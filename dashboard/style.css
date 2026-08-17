@@ -6,7 +6,7 @@
 
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-    background: linear-gradient(135deg, #1e1e2e 0%, #2a2a3e 100%);
+    background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
     color: #e0e0e0;
     min-height: 100vh;
     padding: 20px;
@@ -18,18 +18,19 @@ body {
 }
 
 header {
-    background: rgba(42, 42, 62, 0.8);
+    background: rgba(20, 20, 20, 0.8);
     backdrop-filter: blur(10px);
     border-radius: 16px;
     padding: 30px;
     margin-bottom: 30px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+    border: 1px solid #333;
 }
 
 header h1 {
     font-size: 2.5em;
     margin-bottom: 20px;
-    background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+    background: linear-gradient(90deg, #ffffff 0%, #aaaaaa 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -49,7 +50,7 @@ header h1 {
 
 .info-item .label {
     font-size: 0.85em;
-    color: #888;
+    color: #666;
     text-transform: uppercase;
     letter-spacing: 1px;
 }
@@ -57,7 +58,7 @@ header h1 {
 .info-item .value {
     font-size: 1.5em;
     font-weight: 600;
-    color: #4facfe;
+    color: #ffffff;
 }
 
 #users-container {
@@ -69,9 +70,9 @@ header h1 {
 .empty-state {
     text-align: center;
     padding: 60px 20px;
-    background: rgba(42, 42, 62, 0.5);
+    background: rgba(20, 20, 20, 0.5);
     border-radius: 16px;
-    border: 2px dashed #444;
+    border: 2px dashed #333;
 }
 
 .empty-state p {
@@ -81,21 +82,22 @@ header h1 {
 
 .empty-state .hint {
     font-size: 0.9em;
-    color: #888;
+    color: #666;
 }
 
 .user-card {
-    background: rgba(42, 42, 62, 0.8);
+    background: rgba(20, 20, 20, 0.8);
     backdrop-filter: blur(10px);
     border-radius: 16px;
     padding: 25px;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+    border: 1px solid #333;
     transition: transform 0.2s;
 }
 
 .user-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 6px 24px rgba(255, 255, 255, 0.1);
 }
 
 .user-header {
@@ -104,7 +106,7 @@ header h1 {
     align-items: center;
     margin-bottom: 20px;
     padding-bottom: 15px;
-    border-bottom: 1px solid #444;
+    border-bottom: 1px solid #333;
 }
 
 .user-id {
@@ -127,7 +129,7 @@ header h1 {
 
 .stat-label {
     font-size: 0.75em;
-    color: #888;
+    color: #666;
     margin-bottom: 4px;
 }
 
@@ -137,15 +139,15 @@ header h1 {
 }
 
 .stat-value.ok {
-    color: #4ade80;
+    color: #ffffff;
 }
 
 .stat-value.warning {
-    color: #fbbf24;
+    color: #cccccc;
 }
 
 .stat-value.danger {
-    color: #f87171;
+    color: #888888;
 }
 
 .window-container {
@@ -154,7 +156,7 @@ header h1 {
 
 .window-label {
     font-size: 0.85em;
-    color: #888;
+    color: #666;
     margin-bottom: 10px;
     text-transform: uppercase;
     letter-spacing: 1px;
@@ -163,9 +165,10 @@ header h1 {
 .window-bar {
     position: relative;
     height: 40px;
-    background: rgba(68, 68, 85, 0.5);
+    background: rgba(30, 30, 30, 0.5);
     border-radius: 10px;
     overflow: hidden;
+    border: 1px solid #333;
 }
 
 .window-progress {
@@ -173,8 +176,8 @@ header h1 {
     top: 0;
     right: 0;
     height: 100%;
-    background: linear-gradient(90deg, transparent 0%, rgba(79, 172, 254, 0.3) 100%);
-    border-left: 2px solid #4facfe;
+    background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.2) 100%);
+    border-left: 2px solid #ffffff;
     transition: width 1s linear;
 }
 
@@ -195,7 +198,7 @@ header h1 {
 
 .timeline-label {
     font-size: 0.85em;
-    color: #888;
+    color: #666;
     margin-bottom: 10px;
     text-transform: uppercase;
     letter-spacing: 1px;
@@ -204,9 +207,10 @@ header h1 {
 .timeline {
     position: relative;
     height: 60px;
-    background: rgba(68, 68, 85, 0.3);
+    background: rgba(30, 30, 30, 0.5);
     border-radius: 10px;
     overflow: hidden;
+    border: 1px solid #333;
 }
 
 .timeline-dot {
@@ -221,11 +225,11 @@ header h1 {
 }
 
 .timeline-dot.allowed {
-    background: #4ade80;
+    background: #ffffff;
 }
 
 .timeline-dot.blocked {
-    background: #f87171;
+    background: #666666;
 }
 
 @keyframes fadeIn {
@@ -248,8 +252,8 @@ header h1 {
 }
 
 .status-indicator.active {
-    background: #4ade80;
-    box-shadow: 0 0 10px #4ade80;
+    background: #ffffff;
+    box-shadow: 0 0 10px #ffffff;
     animation: pulse 2s infinite;
 }
 
@@ -265,14 +269,14 @@ header h1 {
 /* Flash animation for new requests */
 @keyframes flash {
     0% {
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
     }
     50% {
-        box-shadow: 0 4px 32px rgba(79, 172, 254, 0.6);
+        box-shadow: 0 4px 32px rgba(255, 255, 255, 0.6);
         transform: translateY(-4px);
     }
     100% {
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
     }
 }
 
@@ -286,14 +290,14 @@ header h1 {
 
 @keyframes flashBlocked {
     0% {
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
     }
     50% {
-        box-shadow: 0 4px 32px rgba(248, 113, 113, 0.6);
+        box-shadow: 0 4px 32px rgba(100, 100, 100, 0.6);
         transform: translateY(-4px);
     }
     100% {
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
     }
 }
 
@@ -311,30 +315,31 @@ header h1 {
 
 .log-label {
     font-size: 0.85em;
-    color: #888;
+    color: #666;
     text-transform: uppercase;
     letter-spacing: 1px;
 }
 
 .log-stats {
     font-size: 0.8em;
-    color: #888;
+    color: #666;
 }
 
 .log-stats .allowed-count {
-    color: #4ade80;
+    color: #ffffff;
 }
 
 .log-stats .blocked-count {
-    color: #f87171;
+    color: #888888;
 }
 
 .log-container {
     max-height: 200px;
     overflow-y: auto;
-    background: rgba(68, 68, 85, 0.3);
+    background: rgba(30, 30, 30, 0.5);
     border-radius: 10px;
     padding: 10px;
+    border: 1px solid #333;
 }
 
 .log-container::-webkit-scrollbar {
@@ -342,12 +347,12 @@ header h1 {
 }
 
 .log-container::-webkit-scrollbar-track {
-    background: rgba(68, 68, 85, 0.3);
+    background: rgba(30, 30, 30, 0.3);
     border-radius: 3px;
 }
 
 .log-container::-webkit-scrollbar-thumb {
-    background: #4facfe;
+    background: #666666;
     border-radius: 3px;
 }
 
@@ -357,14 +362,15 @@ header h1 {
     gap: 10px;
     padding: 8px 10px;
     margin-bottom: 6px;
-    background: rgba(42, 42, 62, 0.5);
+    background: rgba(20, 20, 20, 0.5);
     border-radius: 8px;
     font-size: 0.85em;
     transition: background 0.2s;
+    border: 1px solid #2a2a2a;
 }
 
 .log-entry:hover {
-    background: rgba(42, 42, 62, 0.8);
+    background: rgba(30, 30, 30, 0.8);
 }
 
 .log-entry:last-child {
@@ -394,17 +400,17 @@ header h1 {
 }
 
 .log-status.allowed {
-    background: #4ade80;
-    box-shadow: 0 0 8px #4ade80;
+    background: #ffffff;
+    box-shadow: 0 0 8px #ffffff;
 }
 
 .log-status.blocked {
-    background: #f87171;
-    box-shadow: 0 0 8px #f87171;
+    background: #666666;
+    box-shadow: 0 0 8px #666666;
 }
 
 .log-time {
-    color: #888;
+    color: #666;
     font-size: 0.9em;
     min-width: 65px;
 }
@@ -416,7 +422,7 @@ header h1 {
 }
 
 .log-count {
-    color: #4facfe;
+    color: #ffffff;
     font-weight: 600;
     min-width: 50px;
     text-align: right;
@@ -431,13 +437,13 @@ header h1 {
 }
 
 .log-badge.allowed {
-    background: rgba(74, 222, 128, 0.2);
-    color: #4ade80;
+    background: rgba(255, 255, 255, 0.15);
+    color: #ffffff;
 }
 
 .log-badge.blocked {
-    background: rgba(248, 113, 113, 0.2);
-    color: #f87171;
+    background: rgba(100, 100, 100, 0.3);
+    color: #888888;
 }
 
 .timeline-dot.blocked {
