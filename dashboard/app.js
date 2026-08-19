@@ -11,6 +11,14 @@ const maxRequestsElement = document.getElementById('max-requests');
 const userRequests = new Map();
 const userLogs = new Map();
 
+// Control panel elements
+const userIdInput = document.getElementById('user-id-input');
+const endpointSelect = document.getElementById('endpoint-select');
+const sendOneBtn = document.getElementById('send-one-btn');
+const sendFiveBtn = document.getElementById('send-five-btn');
+const sendFifteenBtn = document.getElementById('send-fifteen-btn');
+const feedbackElement = document.getElementById('request-feedback');
+
 async function fetchStats() {
     try {
         const response = await fetch(`${API_URL}/stats`);
@@ -282,6 +290,104 @@ function createUserCard(userId) {
     
     return card;
 }
+
+// Send request to API
+async function sendRequest(userId, endpoint) {
+    try {
+        const response = await fetch(`${API_URL}${endpoint}`, {
+            method: 'GET',
+            headers: {
+                'X-User-ID': userId
+            }
+        });
+        
+        const data = await response.json();
+        return {
+            success: response.ok,
+            status: response.status,
+            data: data
+        };
+    } catch (error) {
+        return {
+            success: false,
+            error: error.message
+        };
+    }
+}
+
+// Send multiple requests
+async function sendMultipleRequests(count) {
+    const userId = userIdInput.value.trim();
+    const endpoint = endpointSelect.value;
+    
+    if (!userId) {
+        showFeedback('Please enter a User ID', 'error');
+        return;
+    }
+    
+    // Disable buttons during sending
+    setButtonsDisabled(true);
+    
+    let successCount = 0;
+    let blockedCount = 0;
+    const results = [];
+    
+    showFeedback(`Sending ${count} request${count > 1 ? 's' : ''} as "${userId}"...`, 'info');
+    
+    for (let i = 0; i < count; i++) {
+        const result = await sendRequest(userId, endpoint);
+        results.push(result);
+        
+        if (result.success) {
+            successCount++;
+        } else if (result.status === 429) {
+            blockedCount++;
+        }
+        
+        // Small delay between requests
+        if (i < count - 1) {
+            await new Promise(resolve => setTimeout(resolve, 100));
+        }
+    }
+    
+    // Show results
+    const message = `Sent ${count} requests: ${successCount} allowed, ${blockedCount} blocked`;
+    showFeedback(message, successCount > 0 ? 'success' : 'error');
+    
+    setButtonsDisabled(false);
+}
+
+// Show feedback message
+function showFeedback(message, type) {
+    feedbackElement.textContent = message;
+    feedbackElement.className = `feedback show ${type}`;
+    
+    // Auto-hide after 5 seconds for success/error messages
+    if (type !== 'info') {
+        setTimeout(() => {
+            feedbackElement.classList.remove('show');
+        }, 5000);
+    }
+}
+
+// Enable/disable buttons
+function setButtonsDisabled(disabled) {
+    sendOneBtn.disabled = disabled;
+    sendFiveBtn.disabled = disabled;
+    sendFifteenBtn.disabled = disabled;
+}
+
+// Button event listeners
+sendOneBtn.addEventListener('click', () => sendMultipleRequests(1));
+sendFiveBtn.addEventListener('click', () => sendMultipleRequests(5));
+sendFifteenBtn.addEventListener('click', () => sendMultipleRequests(15));
+
+// Allow Enter key in input
+userIdInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+        sendMultipleRequests(1);
+    }
+});
 
 setInterval(fetchStats, POLL_INTERVAL);
 fetchStats();
